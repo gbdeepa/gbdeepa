@@ -1,0 +1,7 @@
+glue_to_snowflake:
+url: <Snowflake account>
+role: <Snowflake role>
+warehouse: <Snowflake warehouse name>
+db: <Snowflake DB name>
+schema: <Snowflake Schema name>
+input_s3_bucket: <Input S3 bucket>
