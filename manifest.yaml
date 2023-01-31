@@ -1,0 +1,27 @@
+base:
+  name: glue_to_snowflake
+  version: "0.0.2"
+  system_tag: SGLUE_TO_SNOWFLAKE
+  src_dir: src
+  unit_test_dir: test/unit
+  region: us-east-1
+  loader_ref: master
+  coverage_report: reports/coverage-report.xml
+   xunit_report: reports/xunit-report.xml
+
+dev:
+  environment: dev
+  aws_account: dev-aws
+
+
+
+test:
+  environment: test
+  aws_account: dev-aws
+
+
+prod:
+  environment: prod
+  aws_account: prod-aws
+
+ 
