@@ -1,8 +1,14 @@
 # This is a basic workflow to help you get started with Actions
         
-name: Python package
+name: Deploy to Dev
+on:
+  push:
+    branches:
+      - develop
 
-on: [push]
+
+env:
+  ENVIRONMENT: dev
 
 jobs:
   build:
