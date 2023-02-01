@@ -44,7 +44,7 @@ jobs:
           coverage run --source=src -m pytest unit
       - name: Create Deployment Bucket
         run: |
-          echo "DEPLOYMENT_BUCKET=s3://fj-spark-deploy"  >> $GITHUB_ENV
+          echo "DEPLOYMENT_BUCKET=fj-spark-deploy"  >> $GITHUB_ENV
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
