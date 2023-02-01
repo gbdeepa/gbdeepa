@@ -9,6 +9,10 @@ on:
 permissions:
   id-token: write
   contents: write
+ 
+env:
+  ENVIRONMENT: dev 
+
 
 jobs:
   build:
@@ -38,6 +42,9 @@ jobs:
       - name: Test with pytest
         run: |
           coverage run --source=src -m pytest unit
+      - name: Create Deployment Bucket
+        run: |
+          echo "DEPLOYMENT_BUCKET= "s3://fj-spark-deploy"  >> $GITHUB_ENV
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -45,5 +52,5 @@ jobs:
           role-to-assume: arn:aws:iam::858366249668:role/github-oidc-role
           role-session-name: OIDCSession
  
-      - run: aws s3 sync . s3://fj-spark-deploy
+      - run: aws s3 sync src aws s3 sync --delete --exact-timestamps . s3://${{ DEPLOYMENT_BUCKET }}
         shell: bash
