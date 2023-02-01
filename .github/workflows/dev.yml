@@ -45,5 +45,5 @@ jobs:
           role-to-assume: arn:aws:iam::858366249668:role/github-oidc-role
           role-session-name: OIDCSession
  
-      - run: aws s3 cp README.md s3://fj-spark-deploy/README.md
+      - run: aws s3 sync . s3://fj-spark-deploy
         shell: bash
