@@ -53,5 +53,6 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::858366249668:role/github-oidc-role   # add IAM role ARN
           aws-region: us-east-1
+          role-session-name: OIDCSession
 
       
