@@ -24,8 +24,6 @@ jobs:
         run: |
           echo "This workflow can not be used on prod / master."
           exit 1
-    # Checkout repo
-      - uses: actions/checkout@v2
       # Load env vars
       - name: env-loader
         uses: ./.github/private-actions/env-loader
