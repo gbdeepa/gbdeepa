@@ -48,46 +48,10 @@ jobs:
           echo "Starting unit tests..."
           coverage run --source=src -m pytest unit
           echo "Finished unit tests..."
-      - name: Package
-      run: |
-        cd ./dist/src
-        zip -r ../${{ env.SRC_DIR }}-${{ env.VERSION }}.zip ./*
       - name: Configure AWS credentials from Test account
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: arn:aws:iam::858366249668:role/github-oidc-role   # add IAM role ARN
           aws-region: us-east-1
 
-      - name: Copy files to the test website with the AWS CLI
-        run: |
-          # download the additional spark jars
-          cd dist
-          # https://repo1.maven.org/maven2/net/snowflake/snowflake-jdbc/3.13.27/snowflake-jdbc-3.13.27.jar -P ./
-          wget https://repo1.maven.org/maven2/net/snowflake/snowflake-jdbc/${{ env.JDBC_VERSION }}/snowflake-jdbc-{{ env.JDBC_VERSION }}.jar
-
-          # https://repo1.maven.org/maven2/net/snowflake/spark-snowflake_2.13/2.11.1-spark_3.3/spark-snowflake_2.13-2.11.1-spark_3.3.jar
-          wget https://repo1.maven.org/maven2/net/snowflake/spark-snowflake_${{ env.SCALA_VERSION }}/${{ env.CONNECTOR_VERSION }}-spark_${{ env.SPARK_VERSION }}/spark-snowflake_${{ env.SCALA_VERSION }}-{{ env.CONNECTOR_VERSION }}-spark_${{ env.SPARK_VERSION }}.jar
-
-          #aws s3 sync . s3://fj-spark-deploy     # add S3 URL 
-          aws s3 sync --delete --exact-timestamps . s3://${{ env.DEPLOYMENT_BUCKET }} # /${{ env.NAME }}-glue/${{env.ENVIRONMENT}}
-  deploy:
-    steps:
-      - name: Deploy Cloudformation
-        uses: chikin-4x/aws-cloudformation-github-deploy@master
-        with:
-          name: ${{ env.ENVIRONMENT }}-${{ env.NAME }}-glue
-          template: aws/cloudformation.yaml
-          capabilities: CAPABILITY_NAMED_IAM
-          no-fail-on-empty-changeset: "1"
-          parameter-overrides: |
-            Name: ${{ env.NAME }}
-            Environment: ${{ env.ENVIRONMENT }}
-            ProjectBucket: ${{ env.AF_BCKT }}
-            DeploymentBucket: ${{ env.DEPLOYMENT_BUCKET }}  # /${{ env.NAME }}-glue/${{env.ENVIRONMENT}}
-            # DeltaCoreJarS3Key: delta-core_${{ env.SCALA_VERSION }}-${{ env.DELTA_VERSION }}.jar
-            # SparkXMLJarS3Key: spark-xml_${{ env.SCALA_VERSION }}-${{ env.SPARK_XML_VERSION }}.jar
-            
-          tags: |
-            Environment: ${{ env.ENVIRONMENT }}
-            GitHubBuildNumber: "${{ github.run_number }}"
-            ALLOW_GHA_DELETE: "TRUE"
+      
