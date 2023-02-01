@@ -15,6 +15,26 @@ env:
 
 
 jobs:
+  init:
+    name: Init
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch
+        if: env.ENVIRONMENT == 'prod'
+        run: |
+          echo "This workflow can not be used on prod / master."
+          exit 1
+    # Checkout repo
+      - uses: actions/checkout@v2
+      # Load env vars
+      - name: env-loader
+        uses: ./.github/private-actions/env-loader
+        with:
+          env-file: ./manifest.yaml
+          filter: base,${{ env.ENVIRONMENT }}
+    outputs:
+      env: ${{ toJson(env) }}
+
   build:
 
     runs-on: ubuntu-latest
@@ -33,12 +53,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8 pytest coverage
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - name: Lint with flake8
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Test with pytest
         run: |
           coverage run --source=src -m pytest unit
