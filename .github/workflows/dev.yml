@@ -1,58 +1,26 @@
-# This is a basic workflow to help you get started with Actions
-        
-name: Deploy to Dev
-on:
-  push:
-    branches:
-      - develop
+name: 'AWS Deploy'
+ 
+# The workflow should only trigger on pull requests to the main branch
+on: 
   workflow_dispatch:
-
+ 
+# Required to get the ID Token that will be used for OIDC
 permissions:
   id-token: write
-  contents: read
-      
-env:
-  ENVIRONMENT: dev
-
+ 
 jobs:
-  build:
-
+  read-dev:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.8"]
-
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install flake8 pytest coverage build
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - name: Lint with flake8
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      - name: Create Deployment Bucket
-        run: |
-          #echo "DEPLOYMENT_BUCKET=$(aws sts get-caller-identity --query Account --output text)-us-east-1-deploy" >> $GITHUB_ENV
-          echo "DEPLOYMENT_BUCKET=s3://fj-spark-deploy"  >> $GITHUB_ENV
-      - name: Test with pytest
-        run: |
-          echo "Starting unit tests..."
-          coverage run --source=src -m pytest unit
-          echo "Finished unit tests..."
-      - name: Configure AWS credentials from Test account
+      - name: Checkout
+        uses: actions/checkout@v2
+ 
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::858366249668:role/github-oidc-role   # add IAM role ARN
           aws-region: us-east-1
+          role-to-assume: arn:aws:iam::858366249668:role/github-oidc-role
           role-session-name: OIDCSession
-
-      
+ 
+      - run: aws s3 cp README.md s3://fj-spark-deploy/README.md
+        shell: bash
