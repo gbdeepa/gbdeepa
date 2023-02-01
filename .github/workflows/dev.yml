@@ -20,11 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Check branch
-        if: env.ENVIRONMENT == 'prod'
-        run: |
-          echo "This workflow can not be used on prod / master."
-          exit 1
       # Load env vars
       - name: env-loader
         uses: ./.github/private-actions/env-loader
