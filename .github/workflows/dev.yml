@@ -19,15 +19,12 @@ jobs:
     name: Init
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      # Load env vars
-      - name: env-loader
-        uses: ./.github/private-actions/env-loader
+       # Checkout repo
+      - uses: actions/checkout@v2
+      - name: Run read-yaml action
         with:
           env-file: ./manifest.yaml
           filter: base,${{ env.ENVIRONMENT }}
-    outputs:
-      env: ${{ toJson(env) }}
 
   build:
 
