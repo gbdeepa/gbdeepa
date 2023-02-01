@@ -42,7 +42,7 @@ jobs:
       - name: Create Deployment Bucket
         run: |
           #echo "DEPLOYMENT_BUCKET=$(aws sts get-caller-identity --query Account --output text)-us-east-1-deploy" >> $GITHUB_ENV
-          echo "DEPLOYMENT_BUCKET= "s3://fj-spark-deploy"  >> $GITHUB_ENV
+          echo "DEPLOYMENT_BUCKET=s3://fj-spark-deploy"  >> $GITHUB_ENV
       - name: Test with pytest
         run: |
           echo "Starting unit tests..."
