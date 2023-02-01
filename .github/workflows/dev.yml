@@ -22,9 +22,10 @@ jobs:
        # Checkout repo
       - uses: actions/checkout@v2
       - name: Run read-yaml action
+        uses: jbutcher5/read-yaml@main
         with:
-          env-file: ./manifest.yaml
-          filter: base,${{ env.ENVIRONMENT }}
+          file: ./manifest.yaml
+          key-path: '["dev"]'
   build:
     runs-on: ubuntu-latest
     strategy:
