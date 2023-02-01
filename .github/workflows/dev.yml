@@ -25,9 +25,7 @@ jobs:
         with:
           env-file: ./manifest.yaml
           filter: base,${{ env.ENVIRONMENT }}
-
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
