@@ -67,8 +67,8 @@ jobs:
           wget https://repo1.maven.org/maven2/net/snowflake/spark-snowflake_${{ env.SCALA_VERSION }}/${{ env.CONNECTOR_VERSION }}-spark_${{ env.SPARK_VERSION }}/spark-snowflake_${{ env.SCALA_VERSION }}-${{ env.CONNECTOR_VERSION }}-spark_${{ env.SPARK_VERSION }}.jar
           cd ../
 
-          aws s3 sync --delete --exact-timestamps src s3://${{ ENV.DEPLOYMENT_BUCKET }}
-          aws s3 sync --delete --exact-timestamps lib s3://${{ ENV.DEPLOYMENT_BUCKET }}
+          aws s3 sync --delete --exact-timestamps . s3://${{ ENV.DEPLOYMENT_BUCKET }}
+          #aws s3 sync --delete --exact-timestamps lib s3://${{ ENV.DEPLOYMENT_BUCKET }}
           #aws s3 sync --delete --exact-timestamps aws s3://${{ ENV.DEPLOYMENT_BUCKET }}
         shell: bash
     outputs:
@@ -92,7 +92,7 @@ jobs:
         uses: aws-actions/aws-cloudformation-github-deploy@master
         with:
           name: snowflake-glue-stack
-          template: aws/cloudformation.yaml
+          template: https://fj-spark-deploy.s3.amazonaws.com/aws/cloudformation.yaml
           capabilities: CAPABILITY_NAMED_IAM
           no-fail-on-empty-changeset: "1"
           parameter-overrides: |
