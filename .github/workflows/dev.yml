@@ -21,12 +21,14 @@ jobs:
     steps:
        # Checkout repo
       - uses: actions/checkout@v2
-      - name: Run read-yaml action
-        id: using
-        uses: jbutcher5/read-yaml@main
+      - name: Import env
+        uses: cardinalby/export-env-action@v1
         with:
-          file: ./manifest.yaml
-          key-path: '["base", "dev"]'
+          envFile: 'variables.env'    
+          expand: 'true'
+      - name: Output
+        run: |
+          echo ${{ env.JDBC_VERSION }}
 
   build:
     runs-on: ubuntu-latest
