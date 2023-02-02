@@ -21,14 +21,12 @@ jobs:
     steps:
        # Checkout repo
       - uses: actions/checkout@v2
-      # Load env vars
-      - name: env-loader
-        uses: ./.github/private-actions/env-loader
+      - name: Run read-yaml action
+        id: using
+        uses: jbutcher5/read-yaml@main
         with:
-          env-file: ./manifest.yaml
-          filter: base,${{ env.ENVIRONMENT }}
-    outputs:
-      env: ${{ toJson(env) }}
+          file: ./manifest.yaml
+          key-path: '["base", "dev"]'
 
   build:
     runs-on: ubuntu-latest
