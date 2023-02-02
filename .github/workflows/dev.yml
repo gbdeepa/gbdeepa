@@ -15,21 +15,6 @@ env:
 
 
 jobs:
-  init:
-    name: Init
-    runs-on: ubuntu-latest
-    steps:
-       # Checkout repo
-      - uses: actions/checkout@v2
-      - name: Import env
-        uses: cardinalby/export-env-action@v1
-        with:
-          envFile: 'variables.env'    
-          # expand: 'true'
-      - name: Output
-        run: |
-          echo ${{ env.JDBC_VERSION }}
-
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -38,6 +23,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - name: Import env
+        uses: cardinalby/export-env-action@v1
+        with:
+          envFile: 'variables.env'    
+          # expand: 'true'
+      - name: Output
+        run: |
+          echo ${{ env.JDBC_VERSION }}
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
