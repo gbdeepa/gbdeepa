@@ -67,4 +67,5 @@ jobs:
           cd ../
 
           aws s3 sync --delete --exact-timestamps src s3://${{ ENV.DEPLOYMENT_BUCKET }}
+          aws s3 sync --delete --exact-timestamps lib s3://${{ ENV.DEPLOYMENT_BUCKET }}
         shell: bash
