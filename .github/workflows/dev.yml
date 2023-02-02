@@ -98,8 +98,8 @@ jobs:
           parameter-overrides: |
             Name: ${{ env.NAME }}
             ProjectBucket: ${{ env.PROJECT_BUCKET }}
-            CodeBucket: ${{env.DEPLOYMENT_BUCKET }}
-            SecretName: ${{env.SECRET_NAME }}
+            CodeBucket: ${{ env.DEPLOYMENT_BUCKET }}
+            SecretName: ${{ env.SECRET_NAME }}
                         
           tags: |
             ALLOW_GHA_DELETE: "TRUE"
