@@ -25,7 +25,7 @@ jobs:
         uses: cardinalby/export-env-action@v1
         with:
           envFile: 'variables.env'    
-          expand: 'true'
+          # expand: 'true'
       - name: Output
         run: |
           echo ${{ env.JDBC_VERSION }}
