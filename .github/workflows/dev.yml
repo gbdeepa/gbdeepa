@@ -75,7 +75,7 @@ jobs:
       account: ${{ env.AWS_ACCOUNT }}
   deploy:
     name: Deploy Cloudformation
-    env: ${{ fromJson(needs.init.outputs.env) }} # Setting env to env output from previous job
+    env: ${{ fromJson(needs.build.outputs.env) }} # Setting env to env output from previous job
     needs: [build]
     runs-on: ${{ needs.build.outputs.account }} # Specifying which runner to run on
     steps:
