@@ -77,7 +77,8 @@ jobs:
     name: Deploy Cloudformation
     env: ${{ fromJson(needs.build.outputs.env) }} # Setting env to env output from previous job
     needs: [build]
-    runs-on: ${{ needs.build.outputs.account }} # Specifying which runner to run on
+    #runs-on: ${{ needs.build.outputs.account }} # Specifying which runner to run on
+    runs-on: ubuntu-latest
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
