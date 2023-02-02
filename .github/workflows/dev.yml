@@ -91,7 +91,7 @@ jobs:
       - name: Deploy Cloudformation
         uses: aws-actions/aws-cloudformation-github-deploy@master
         with:
-          name: ${{ env.NAME }}-glue
+          name: snowflake-glue-stack
           template: aws/cloudformation.yaml
           capabilities: CAPABILITY_NAMED_IAM
           no-fail-on-empty-changeset: "1"
