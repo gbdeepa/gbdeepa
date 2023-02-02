@@ -79,8 +79,14 @@ jobs:
     needs: [build]
     runs-on: ${{ needs.build.outputs.account }} # Specifying which runner to run on
     steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+            aws-region: us-east-1
+            role-to-assume: arn:aws:iam::858366249668:role/github-oidc-role
+            role-session-name: OIDCSession
       - name: Deploy Cloudformation
-        uses: chikin-4x/aws-cloudformation-github-deploy@master
+        uses: aws-actions/aws-cloudformation-github-deploy@master
         with:
           name: ${{ env.NAME }}-glue
           template: aws/cloudformation.yaml
