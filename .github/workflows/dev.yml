@@ -89,7 +89,7 @@ jobs:
             role-to-assume: arn:aws:iam::858366249668:role/github-oidc-role
             role-session-name: OIDCSession
       - name: Deploy Cloudformation
-        uses: aws-actions/aws-cloudformation-github-deploy@master
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
           name: snowflake-glue-stack
           template: https://fj-spark-deploy.s3.amazonaws.com/aws/cloudformation.yaml
