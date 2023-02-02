@@ -69,7 +69,7 @@ jobs:
 
           aws s3 sync --delete --exact-timestamps src s3://${{ ENV.DEPLOYMENT_BUCKET }}
           aws s3 sync --delete --exact-timestamps lib s3://${{ ENV.DEPLOYMENT_BUCKET }}
-          aws s3 sync --delete --exact-timestamps aws/cloudformation.yaml s3://${{ ENV.DEPLOYMENT_BUCKET }}
+          aws s3 sync --delete --exact-timestamps ./aws/cloudformation.yaml s3://${{ ENV.DEPLOYMENT_BUCKET }}
         shell: bash
     outputs:
       env: ${{ toJson(env) }}
