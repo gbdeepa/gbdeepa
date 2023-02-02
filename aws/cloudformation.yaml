@@ -1,6 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: >
-This Template Configures a Job to Load Data into a Snowflake Table using Glue
+Description: "This Template Configures a Job to Load Data into a Snowflake Table using Glue"
 Parameters:
 ProjectBucket:
   Type: String
