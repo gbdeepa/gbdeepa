@@ -69,6 +69,7 @@ jobs:
 
           aws s3 sync --delete --exact-timestamps src s3://${{ ENV.DEPLOYMENT_BUCKET }}
           aws s3 sync --delete --exact-timestamps lib s3://${{ ENV.DEPLOYMENT_BUCKET }}
+          aws s3 sync --delete --exact-timestamps aws/clouformation.yaml s3://${{ ENV.DEPLOYMENT_BUCKET }}
         shell: bash
     outputs:
       env: ${{ toJson(env) }}
@@ -90,7 +91,7 @@ jobs:
         uses: aws-actions/aws-cloudformation-github-deploy@master
         with:
           name: ${{ env.NAME }}-glue
-          template: aws/cloudformation.yaml
+          template: s3://${{ ENV.DEPLOYMENT_BUCKET }}/cloudformation.yaml
           capabilities: CAPABILITY_NAMED_IAM
           no-fail-on-empty-changeset: "1"
           parameter-overrides: |
