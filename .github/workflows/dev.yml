@@ -66,7 +66,7 @@ jobs:
   DeployCode:
     name: Deploy Code
     env: ${{ fromJson(needs.Init.outputs.env) }}
-    needs: [Init]
+    needs: [BuildAndVerify]
     runs-on: ubuntu-latest
     strategy:
         matrix:
@@ -94,7 +94,7 @@ jobs:
   DeployCloudformation:
     name: Deploy Cloudformation
     env: ${{ fromJson(needs.Init.outputs.env) }}
-    needs: [Init]
+    needs: [DeployCode]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
