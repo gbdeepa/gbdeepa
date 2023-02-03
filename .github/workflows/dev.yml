@@ -4,8 +4,7 @@ on:
   workflow_dispatch:
   pull_request:
     branches:
-      # - develop
-      - main
+      - master
 
 permissions:
   id-token: write
