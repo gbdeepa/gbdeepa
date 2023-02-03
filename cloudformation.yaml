@@ -78,9 +78,9 @@ Resources:
       NumberOfWorkers: 2
       Timeout: 480
       DefaultArguments:
-      '--extra-jars': !Sub 's3://${CodeBucket}/connectors/snowflake-jdbc-3.13.22.jar,s3://${CodeBucket}/connectors/spark-snowflake_2.11-2.9.3-spark_2.4.jar'
-      '--extra-files': !Sub 's3://${CodeBucket}/code/config.yaml'
-      '--TempDir' : !Sub 's3://${CodeBucket}/temp'
-      '--spark-event-logs-path' : !Sub 's3://${CodeBucket}/sparkHistoryLogs/'
-      '--enable-metrics': true
-      '--enable-spark-ui' : true
+        '--extra-jars': !Sub 's3://${CodeBucket}/connectors/snowflake-jdbc-3.13.22.jar,s3://${CodeBucket}/connectors/spark-snowflake_2.11-2.9.3-spark_2.4.jar'
+        '--extra-files': !Sub 's3://${CodeBucket}/code/config.yaml'
+        '--TempDir' : !Sub 's3://${CodeBucket}/temp'
+        '--spark-event-logs-path' : !Sub 's3://${CodeBucket}/sparkHistoryLogs/'
+        '--enable-metrics': true
+        '--enable-spark-ui' : true
