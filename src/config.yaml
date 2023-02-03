@@ -1,7 +1,8 @@
 glue_to_snowflake:
-url: <Snowflake account>
-role: <Snowflake role>
-warehouse: <Snowflake warehouse name>
-db: <Snowflake DB name>
-schema: <Snowflake Schema name>
-input_s3_bucket: <Input S3 bucket>
+ url: aws_cas2.snowflakecomputing.com
+ role: fj_dbo
+ warehouse: fj_wh
+ db: fj_db
+ schema: demo
+ input_s3_bucket: fj-s3-glue-snowflake
+ snowflake_user: fjanardanan
