@@ -58,8 +58,8 @@ jobs:
       - name: Copy files to the test website with the AWS CLI
         run: |
           # download the additional spark jars
-          mkdir lib
-          cd lib
+          mkdir connector
+          cd connector
           # https://repo1.maven.org/maven2/net/snowflake/snowflake-jdbc/3.13.27/snowflake-jdbc-3.13.27.jar -P ./
           wget https://repo1.maven.org/maven2/net/snowflake/snowflake-jdbc/${{ env.JDBC_VERSION }}/snowflake-jdbc-${{ env.JDBC_VERSION }}.jar
 
