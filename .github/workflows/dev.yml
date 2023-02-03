@@ -26,7 +26,10 @@ jobs:
       - name: Import env
       - uses: cardinalby/export-env-action@v1
         with:
-            envFile: 'variables.env'
+          envFile: 'variables.env'
+      - name: Output
+        run: |
+          echo ${{ env.JDBC_VERSION }}
       - name: Create Deployment Bucket
         run: |
           echo "DEPLOYMENT_BUCKET=fj-spark-deploy"  >> $GITHUB_ENV
@@ -34,21 +37,18 @@ jobs:
     outputs:
       env: ${{ toJson(env) }}
       account: ${{ env.AWS_ACCOUNT }}
+      
+      
   BuildAndVerify:
-    name: Build and Verify
+    name: Build And Verify
     env: ${{ fromJson(needs.Init.outputs.env) }}
     needs: [Init]
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.8"]
-
     steps:
       - uses: actions/checkout@v3
-      - name: Import env
-        uses: cardinalby/export-env-action@v1
-        with:
-          envFile: 'variables.env'    
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -61,6 +61,8 @@ jobs:
       - name: Test with pytest
         run: |
           coverage run --source=src -m pytest unit
+
+
   DeployCode:
     name: Deploy Code
     env: ${{ fromJson(needs.Init.outputs.env) }}
@@ -69,7 +71,6 @@ jobs:
     strategy:
         matrix:
           python-version: ["3.8"]
-
     steps:
       - uses: actions/checkout@v3
       - name: Configure AWS Credentials
@@ -89,7 +90,8 @@ jobs:
           aws s3 sync --delete --exact-timestamps . s3://${{ ENV.DEPLOYMENT_BUCKET }}
           aws s3 cp src/code s3://${{ ENV.PROJECT_BUCKET }}/code --recursive
         shell: bash
-  Deploy:
+        
+  DeployCloudformation:
     name: Deploy Cloudformation
     env: ${{ fromJson(needs.Init.outputs.env) }}
     needs: [Init]
