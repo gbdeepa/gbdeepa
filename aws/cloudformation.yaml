@@ -1,86 +1,86 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: "This Template Configures a Job to Load Data into a Snowflake Table using Glue"
 Parameters:
-ProjectBucket:
-  Type: String
-  MinLength: "1"
-  Description: "S3 Bucket Containing the Data Lake Data"
-CodeBucket:
-  Type: String
-  Description: "S3 bucket containing glue code"
-SecretName:
-  Type: String
-  Description: "The secret containing the Snowflake login information"
-Resources:
-SnowflakeGlueJobRole:
-  Type: "AWS::IAM::Role"
-  Properties:
-    AssumeRolePolicyDocument:
-      Version: '2012-10-17'
-      Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-              - glue.amazonaws.com
-          Action:
-            - sts:AssumeRole
-    RoleName: 'glue-snowflake-iam-role'
-    Policies:
-      - PolicyName: glue-snowflake-s3-policy
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: Allow
-              Action:
-                - "s3:GetObject"
-                - "s3:PutObject"
-                - "s3:ListBucket"
-                - "s3:DeleteObject"
-              Resource:
-                - !Sub "arn:aws:s3:::${ProjectBucket}"
-                - !Sub "arn:aws:s3:::${ProjectBucket}/*"
-      - PolicyName: glue-snowflake-cloudwatch-policy
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: Allow
-              Action:
-               - "logs:CreateLogGroup"
-               - "logs:CreateLogStream"
-               - "logs:PutLogEvents"
-              Resource:
-               - "arn:aws:logs:*:*:/aws-glue/*"
-      - PolicyName: "glue-snowflake-secret-manager"
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: "Allow"
-              Action: [
-                  "secretsmanager:GetSecretValue",
-                  "secretsmanager:DescribeSecret"
-              ]
-              Resource: [
-                  !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${SecretName}*"
-              ]
-    Path: "/"
-SnowflakeGlueJob:
-  Type: 'AWS::Glue::Job'
-  Properties:
-    Name: 'glue-to-snowflake-copy'
-    Description: ''
-    Role: !Ref SnowflakeGlueJobRole
-    Command:
-      Name: glueetl
-      PythonVersion: '3'
-      ScriptLocation: !Sub 's3://${CodeBucket}/code/glue_copy_snowflake.py'
-    GlueVersion: '2.0'
-    WorkerType: G.1X
-    NumberOfWorkers: 2
-    Timeout: 480
-    DefaultArguments:
-     '--extra-jars': !Sub 's3://${CodeBucket}/connectors/snowflake-jdbc-3.13.22.jar,s3://${CodeBucket}/connectors/spark-snowflake_2.11-2.9.3-spark_2.4.jar'
-     '--extra-files': !Sub 's3://${CodeBucket}/code/config.yaml'
-     '--TempDir' : !Sub 's3://${CodeBucket}/temp'
-     '--spark-event-logs-path' : !Sub 's3://${CodeBucket}/sparkHistoryLogs/'
-     '--enable-metrics': true
-     '--enable-spark-ui' : true
+  ProjectBucket:
+    Type: String
+    MinLength: "1"
+    Description: "S3 Bucket Containing the Data Lake Data"
+  CodeBucket:
+    Type: String
+    Description: "S3 bucket containing glue code"
+  SecretName:
+    Type: String
+    Description: "The secret containing the Snowflake login information"
+  Resources:
+  SnowflakeGlueJobRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - glue.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      RoleName: 'glue-snowflake-iam-role'
+      Policies:
+        - PolicyName: glue-snowflake-s3-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:GetObject"
+                  - "s3:PutObject"
+                  - "s3:ListBucket"
+                  - "s3:DeleteObject"
+                Resource:
+                  - !Sub "arn:aws:s3:::${ProjectBucket}"
+                  - !Sub "arn:aws:s3:::${ProjectBucket}/*"
+        - PolicyName: glue-snowflake-cloudwatch-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                - "logs:CreateLogGroup"
+                - "logs:CreateLogStream"
+                - "logs:PutLogEvents"
+                Resource:
+                - "arn:aws:logs:*:*:/aws-glue/*"
+        - PolicyName: "glue-snowflake-secret-manager"
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: "Allow"
+                Action: [
+                    "secretsmanager:GetSecretValue",
+                    "secretsmanager:DescribeSecret"
+                ]
+                Resource: [
+                    !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${SecretName}*"
+                ]
+      Path: "/"
+  SnowflakeGlueJob:
+    Type: 'AWS::Glue::Job'
+    Properties:
+      Name: 'glue-to-snowflake-copy'
+      Description: ''
+      Role: !Ref SnowflakeGlueJobRole
+      Command:
+        Name: glueetl
+        PythonVersion: '3'
+        ScriptLocation: !Sub 's3://${CodeBucket}/code/glue_copy_snowflake.py'
+      GlueVersion: '2.0'
+      WorkerType: G.1X
+      NumberOfWorkers: 2
+      Timeout: 480
+      DefaultArguments:
+      '--extra-jars': !Sub 's3://${CodeBucket}/connectors/snowflake-jdbc-3.13.22.jar,s3://${CodeBucket}/connectors/spark-snowflake_2.11-2.9.3-spark_2.4.jar'
+      '--extra-files': !Sub 's3://${CodeBucket}/code/config.yaml'
+      '--TempDir' : !Sub 's3://${CodeBucket}/temp'
+      '--spark-event-logs-path' : !Sub 's3://${CodeBucket}/sparkHistoryLogs/'
+      '--enable-metrics': true
+      '--enable-spark-ui' : true
