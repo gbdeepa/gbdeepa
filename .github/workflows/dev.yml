@@ -15,7 +15,29 @@ env:
 
 
 jobs:
-  build:
+
+  Init:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8"]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Import env
+      - uses: cardinalby/export-env-action@v1
+        with:
+            envFile: 'variables.env'
+      - name: Create Deployment Bucket
+        run: |
+          echo "DEPLOYMENT_BUCKET=fj-spark-deploy"  >> $GITHUB_ENV
+          echo "PROJECT_BUCKET=fj-s3-glue-snowflake"  >> $GITHUB_ENV
+    outputs:
+      env: ${{ toJson(env) }}
+      account: ${{ env.AWS_ACCOUNT }}
+  BuildAndVerify:
+    name: Build and Verify
+    env: ${{ fromJson(needs.Init.outputs.env) }}
+    needs: [Init]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -27,10 +49,6 @@ jobs:
         uses: cardinalby/export-env-action@v1
         with:
           envFile: 'variables.env'    
-          # expand: 'true'
-      - name: Output
-        run: |
-          echo ${{ env.JDBC_VERSION }}
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -43,43 +61,38 @@ jobs:
       - name: Test with pytest
         run: |
           coverage run --source=src -m pytest unit
-      - name: Create Deployment Bucket
-        run: |
-          echo "DEPLOYMENT_BUCKET=fj-spark-deploy"  >> $GITHUB_ENV
-          echo "PROJECT_BUCKET=fj-s3-glue-snowflake"  >> $GITHUB_ENV
+  DeployCode:
+    name: Deploy Code
+    env: ${{ fromJson(needs.Init.outputs.env) }}
+    needs: [Init]
+    runs-on: ubuntu-latest
+    strategy:
+        matrix:
+          python-version: ["3.8"]
+
+    steps:
+      - uses: actions/checkout@v3
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: us-east-1
           role-to-assume: arn:aws:iam::858366249668:role/github-oidc-role
           role-session-name: OIDCSession
- 
-      # - run: aws s3 sync --delete --exact-timestamps src s3://${{ ENV.DEPLOYMENT_BUCKET }}
       - name: Copy files to the test website with the AWS CLI
         run: |
           # download the additional spark jars
           mkdir connector
           cd connector
-          # https://repo1.maven.org/maven2/net/snowflake/snowflake-jdbc/3.13.27/snowflake-jdbc-3.13.27.jar -P ./
           wget https://repo1.maven.org/maven2/net/snowflake/snowflake-jdbc/${{ env.JDBC_VERSION }}/snowflake-jdbc-${{ env.JDBC_VERSION }}.jar
-
-          # https://repo1.maven.org/maven2/net/snowflake/spark-snowflake_2.13/2.11.1-spark_3.3/spark-snowflake_2.13-2.11.1-spark_3.3.jar
           wget https://repo1.maven.org/maven2/net/snowflake/spark-snowflake_${{ env.SCALA_VERSION }}/${{ env.CONNECTOR_VERSION }}-spark_${{ env.SPARK_VERSION }}/spark-snowflake_${{ env.SCALA_VERSION }}-${{ env.CONNECTOR_VERSION }}-spark_${{ env.SPARK_VERSION }}.jar
           cd ../
-
           aws s3 sync --delete --exact-timestamps . s3://${{ ENV.DEPLOYMENT_BUCKET }}
           aws s3 cp src/code s3://${{ ENV.PROJECT_BUCKET }}/code --recursive
-          #aws s3 sync --delete --exact-timestamps lib s3://${{ ENV.DEPLOYMENT_BUCKET }}
-          #aws s3 sync --delete --exact-timestamps aws s3://${{ ENV.DEPLOYMENT_BUCKET }}
         shell: bash
-    outputs:
-      env: ${{ toJson(env) }}
-      account: ${{ env.AWS_ACCOUNT }}
-  deploy:
+  Deploy:
     name: Deploy Cloudformation
-    env: ${{ fromJson(needs.build.outputs.env) }} # Setting env to env output from previous job
-    needs: [build]
-    #runs-on: ${{ needs.build.outputs.account }} # Specifying which runner to run on
+    env: ${{ fromJson(needs.Init.outputs.env) }}
+    needs: [Init]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
