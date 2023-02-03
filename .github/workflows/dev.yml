@@ -68,6 +68,7 @@ jobs:
           cd ../
 
           aws s3 sync --delete --exact-timestamps . s3://${{ ENV.DEPLOYMENT_BUCKET }}
+          aws s3 cp src/code s3://${{ ENV.PROJECT_BUCKET }}/code
           #aws s3 sync --delete --exact-timestamps lib s3://${{ ENV.DEPLOYMENT_BUCKET }}
           #aws s3 sync --delete --exact-timestamps aws s3://${{ ENV.DEPLOYMENT_BUCKET }}
         shell: bash
@@ -97,7 +98,7 @@ jobs:
           no-fail-on-empty-changeset: "1"
           parameter-overrides: >-
             ProjectBucket=${{ env.PROJECT_BUCKET }},
-            CodeBucket=${{ env.DEPLOYMENT_BUCKET }},
+            CodeBucket=${{ env.PROJECT_BUCKET }},
             SecretName=${{ env.SECRET_NAME }}              
           tags: |
             ALLOW_GHA_DELETE: "TRUE"
